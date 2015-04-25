@@ -9,7 +9,7 @@
 #define BUFFER_SIZE 256
 #define POLYPHONY 16
 
-#define BPM 79.0f
+#define BPM 120.0f
 #define BAR_DURATION ((unsigned int)(60.0f * 44100.0f / BPM))
 #define DELAY_LEFT_DURATION (BAR_DURATION / 2)
 #define DELAY_RIGHT_DURATION (BAR_DURATION  * 2 / 3)
@@ -43,7 +43,7 @@ int main(int argc, char** argv)
 	};
 	
 	sfx_t main_track = load_sfx(argv[1]);
-	channels[0].play_position = main_track.buffer;
+	channels[0].play_position = main_track.buffer + 44100*2*2*24;
 	channels[0].remaining_frames = main_track.frame_count;
 	
 	partition_t *partition = load_partition(argv[2]);
@@ -154,8 +154,7 @@ int main(int argc, char** argv)
 		}
 		
 		unsigned int track_time = main_track.frame_count - channels[0].remaining_frames - BUFFER_SIZE * 4;
-		const float bpm = 79.0f;
-		float track_beat = (float)track_time * bpm / 60.0f / 44100.0f;
+		float track_beat = (float)track_time * BPM / 60.0f / 44100.0f;
 		
 /*		note[0] = 0x90;
 		note[1] = 0x00; // row 0, column 0
@@ -167,7 +166,7 @@ int main(int argc, char** argv)
 		note_t *pnote;
 		for (i = 0, pnote = partition->notes; i < partition->note_count; i++, pnote++)
 		{
-			float note_time = track_beat - pnote->time;
+			float note_time = fmod(track_beat, 16.0f) - pnote->time;
 			if ((note_time >= -1.0f) && (note_time < 0.0f))
 			{
 				if (note_time >= -0.5f)
