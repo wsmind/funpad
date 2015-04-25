@@ -3,6 +3,7 @@
 #include <alsa/asoundlib.h>
 
 #include "launchpad.h"
+#include "partition.h"
 #include "wav.h"
 
 #define BUFFER_SIZE 256
@@ -45,17 +46,20 @@ int main()
 	channels[0].play_position = main_track.buffer;
 	channels[0].remaining_frames = main_track.frame_count;
 	
+	partition_t *partition = load_partition("data/test.json");
+	
 	launchpad_open();
 	launchpad_reset();
+	launchpad_set_brightness(0xf);
 	
-	int x, y;
+	/*int x, y;
 	for (y = 0; y < 8; y++)
 	{
 		for (x = 0; x < 8; x++)
 		{
 			launchpad_set_color(x, y, x % 4, y % 4);
 		}
-	}
+	}*/
 	
 	snd_pcm_t *pcm = 0;
 	int err = snd_pcm_open(&pcm, "default", SND_PCM_STREAM_PLAYBACK, 0);
@@ -149,7 +153,6 @@ int main()
 		//launchpad_write(note);
 //		launchpad_set_color(0, 0, 0, (fmod(track_beat, 2.0f) >= 1.0f) * 3);
 //		launchpad_set_brightness((int)((sin(track_beat) * 0.5 + 0.5) * 15));
-		launchpad_set_brightness(0xf);
 		
 		memset(pcm_out, 0, sizeof(pcm_out));
 		memset(aux_bus, 0, sizeof(aux_bus));

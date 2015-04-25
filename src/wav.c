@@ -7,7 +7,7 @@
 
 sfx_t load_sfx(const char *filename)
 {
-	printf("loading %s\n", filename);
+	printf("loading wav %s\n", filename);
 	
 	FILE *f = fopen(filename, "rb");
 	assert(f);
