@@ -147,12 +147,22 @@ int main()
 		const float bpm = 79.0f;
 		float track_beat = (float)track_time * bpm / 60.0f / 44100.0f;
 		
-		note[0] = 0x90;
+/*		note[0] = 0x90;
 		note[1] = 0x00; // row 0, column 0
-		note[2] = (fmod(track_beat, 2.0f) >= 1.0f) ? 0x7f : 0x00;
+		note[2] = (fmod(track_beat, 2.0f) >= 1.0f) ? 0x7f : 0x00;*/
 		//launchpad_write(note);
 //		launchpad_set_color(0, 0, 0, (fmod(track_beat, 2.0f) >= 1.0f) * 3);
 //		launchpad_set_brightness((int)((sin(track_beat) * 0.5 + 0.5) * 15));
+
+		note_t *pnote;
+		for (i = 0, pnote = partition->notes; i < partition->note_count; i++, pnote++)
+		{
+			float note_time = track_beat - pnote->time;
+			if ((note_time >= 0.0f) && (note_time < 1.0f))
+				launchpad_set_color(pnote->x, pnote->y, 3, 3);
+			else if ((note_time >= 1.0f) && (note_time < 2.0f))
+				launchpad_set_color(pnote->x, pnote->y, 0, 0);
+		}
 		
 		memset(pcm_out, 0, sizeof(pcm_out));
 		memset(aux_bus, 0, sizeof(aux_bus));
