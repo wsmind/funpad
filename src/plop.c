@@ -29,7 +29,7 @@ typedef struct
 
 channel_t channels[POLYPHONY];
 
-int main()
+int main(int argc, char** argv)
 {
 	memset(&channels, 0, sizeof(channels));
 	
@@ -46,7 +46,7 @@ int main()
 	channels[0].play_position = main_track.buffer;
 	channels[0].remaining_frames = main_track.frame_count;
 	
-	partition_t *partition = load_partition("data/test.json");
+	partition_t *partition = load_partition(argv[1]);
 	
 	launchpad_open();
 	launchpad_reset();
