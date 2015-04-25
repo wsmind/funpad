@@ -34,19 +34,19 @@ int main(int argc, char** argv)
 	memset(&channels, 0, sizeof(channels));
 	
 	sfx_t sfx[] = {
-		load_sfx("data/Hhrruuuuu!!!.wav"),
-		load_sfx("data/Kick.wav"),
-		load_sfx("data/Bounce.wav"),
-		load_sfx("data/OJ_Damn.wav"),
-		load_sfx("data/Gucci_Mane_Yeah_(1).wav"),
-		load_sfx("data/Gucci_Mane_Yeah_(2).wav")
+		load_sfx("data/wav/Hhrruuuuu!!!.wav"),
+		load_sfx("data/wav/Kick.wav"),
+		load_sfx("data/wav/Bounce.wav"),
+		load_sfx("data/wav/OJ_Damn.wav"),
+		load_sfx("data/wav/Gucci_Mane_Yeah_(1).wav"),
+		load_sfx("data/wav/Gucci_Mane_Yeah_(2).wav")
 	};
 	
-	sfx_t main_track = load_sfx("data/track.wav");
+	sfx_t main_track = load_sfx(argv[1]);
 	channels[0].play_position = main_track.buffer;
 	channels[0].remaining_frames = main_track.frame_count;
 	
-	partition_t *partition = load_partition(argv[1]);
+	partition_t *partition = load_partition(argv[2]);
 	
 	launchpad_open();
 	launchpad_reset();
