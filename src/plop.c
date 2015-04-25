@@ -2,6 +2,7 @@
 #include <math.h>
 #include <alsa/asoundlib.h>
 
+#include "launchpad.h"
 #include "wav.h"
 
 #define BUFFER_SIZE 256
@@ -41,20 +42,23 @@ int main()
 	};
 	
 	sfx_t main_track = load_sfx("data/track.wav");
-	//channels[0].play_position = main_track.buffer;
-	//channels[0].remaining_frames = main_track.frame_count;
+	channels[0].play_position = main_track.buffer;
+	channels[0].remaining_frames = main_track.frame_count;
 	
-	snd_rawmidi_t *in = 0;
-	snd_rawmidi_t *out = 0;
-	int err = snd_rawmidi_open(&in, &out, "hw:2,0,0", SND_RAWMIDI_NONBLOCK);
-	if (err < 0)
+	launchpad_open();
+	launchpad_reset();
+	
+	int x, y;
+	for (y = 0; y < 8; y++)
 	{
-		printf("Failed to open midi device: %s\n", snd_strerror(err));
-		return 1;
+		for (x = 0; x < 8; x++)
+		{
+			launchpad_set_color(x, y, x % 4, y % 4);
+		}
 	}
 	
 	snd_pcm_t *pcm = 0;
-	err = snd_pcm_open(&pcm, "default", SND_PCM_STREAM_PLAYBACK, 0);
+	int err = snd_pcm_open(&pcm, "default", SND_PCM_STREAM_PLAYBACK, 0);
 	if (err < 0)
 	{
 		printf("Failed to open pcm device: %s\n", snd_strerror(err));
@@ -110,7 +114,7 @@ int main()
 	while (1)
 	{
 		char note[3];
-		int status = snd_rawmidi_read(in, &note, 3);
+		int status = launchpad_read(note);
 		if (status > 0)
 		{
 			if (note[2] != 0)
@@ -130,7 +134,7 @@ int main()
 				}
 			}
 			
-			snd_rawmidi_write(out, &note, 3);
+			launchpad_write(note);
 			
 			printf("received: %02x\n", note[1]);
 		}
@@ -142,7 +146,10 @@ int main()
 		note[0] = 0x90;
 		note[1] = 0x00; // row 0, column 0
 		note[2] = (fmod(track_beat, 2.0f) >= 1.0f) ? 0x7f : 0x00;
-		snd_rawmidi_write(out, &note, 3);
+		//launchpad_write(note);
+//		launchpad_set_color(0, 0, 0, (fmod(track_beat, 2.0f) >= 1.0f) * 3);
+//		launchpad_set_brightness((int)((sin(track_beat) * 0.5 + 0.5) * 15));
+		launchpad_set_brightness(0xf);
 		
 		memset(pcm_out, 0, sizeof(pcm_out));
 		memset(aux_bus, 0, sizeof(aux_bus));
