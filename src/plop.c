@@ -2,6 +2,8 @@
 #include <math.h>
 #include <alsa/asoundlib.h>
 
+#include "wav.h"
+
 #define BUFFER_SIZE 256
 #define POLYPHONY 16
 
@@ -13,89 +15,6 @@
 unsigned int min(unsigned int a, unsigned int b)
 {
 	return (a <= b) ? a : b;
-}
-
-typedef struct
-{
-	char magic[4];
-	unsigned int file_length;
-	char riff_type[4];
-} riff_header_t;
-
-typedef struct
-{
-	char chunk_name[4];
-	unsigned int chunk_size;
-} riff_chunk_header_t;
-
-typedef struct
-{
-	unsigned short format_tag;
-	unsigned short channels;
-	unsigned int samples_per_second;
-	unsigned int average_bytes_per_second;
-	unsigned short block_align;
-	unsigned short bits_per_sample;
-} fmt_chunk_t;
-
-typedef struct
-{
-	short *buffer; // always 16-bits LE, 2 channels
-	unsigned int frame_count;
-} sfx_t;
-
-sfx_t load_sfx(const char *filename)
-{
-	printf("loading %s\n", filename);
-	
-	FILE *f = fopen(filename, "rb");
-	assert(f);
-	
-	riff_header_t header;
-	fread(&header, sizeof(header), 1, f);
-	assert(!strncmp(header.magic, "RIFF", 4));
-	assert(!strncmp(header.riff_type, "WAVE", 4));
-	
-	fmt_chunk_t format;
-	short *output_buffer = 0;
-	unsigned int data_size = 0;
-	
-	while (!output_buffer)
-	{
-		riff_chunk_header_t chunk_header;
-		fread(&chunk_header, sizeof(chunk_header), 1, f);
-		
-		if (!strncmp(chunk_header.chunk_name, "fmt ", 4))
-		{
-			fread(&format, sizeof(format), 1, f);
-			assert(format.channels == 2);
-			assert(format.samples_per_second == 44100);
-			assert(format.bits_per_sample == 16);
-			
-			fseek(f, chunk_header.chunk_size - sizeof(format), SEEK_CUR);
-		}
-		else if (!strncmp(chunk_header.chunk_name, "data", 4))
-		{
-			output_buffer = malloc(chunk_header.chunk_size);
-			data_size = chunk_header.chunk_size;
-			fread(output_buffer, chunk_header.chunk_size, 1, f);
-			
-			/*int i;
-			for (i = 0; i < chunk_header.chunk_size / 4; i++)
-				output_buffer[i] = output_buffer[i * 2];*/
-		}
-		else
-		{
-			fseek(f, chunk_header.chunk_size, SEEK_CUR);
-		}
-	}
-	
-	fclose(f);
-	
-	sfx_t sfx;
-	sfx.buffer = output_buffer;
-	sfx.frame_count = data_size / format.channels / (format.bits_per_sample >> 3);
-	return sfx;
 }
 
 // playing voices
@@ -127,7 +46,7 @@ int main()
 	
 	snd_rawmidi_t *in = 0;
 	snd_rawmidi_t *out = 0;
-	int err = snd_rawmidi_open(&in, &out, "hw:1,0,0", SND_RAWMIDI_NONBLOCK);
+	int err = snd_rawmidi_open(&in, &out, "hw:2,0,0", SND_RAWMIDI_NONBLOCK);
 	if (err < 0)
 	{
 		printf("Failed to open midi device: %s\n", snd_strerror(err));
