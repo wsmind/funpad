@@ -56,3 +56,13 @@ void launchpad_set_color(unsigned int x, unsigned int y, unsigned int red, unsig
 	launchpad_write(note);
 }
 
+unsigned int launchpad_get_x(char note[3])
+{
+	return note[1] & 0x0f;
+}
+
+unsigned int launchpad_get_y(char note[3])
+{
+	return (note[1] & 0xf0) >> 4;
+}
+

@@ -121,9 +121,15 @@ int main(int argc, char** argv)
 		int status = launchpad_read(note);
 		if (status > 0)
 		{
+			int x, y;
+			x = min(launchpad_get_x(note), 7);
+			y = min(launchpad_get_y(note), 7);
+			
 			if (note[2] != 0)
 			{
-				note[2] = 0x4f;
+				launchpad_set_color(x, y, 0, 3);
+				
+				/*note[2] = 0x4f;
 				
 				for (i = 0; i < POLYPHONY; i++)
 				{
@@ -135,10 +141,14 @@ int main(int argc, char** argv)
 						channels[i].aux_send = 1;
 						break;
 					}
-				}
+				}*/
+			}
+			else
+			{
+				launchpad_set_color(x, y, 0, 0);
 			}
 			
-			launchpad_write(note);
+			//launchpad_write(note);
 			
 			printf("received: %02x\n", note[1]);
 		}
@@ -158,10 +168,21 @@ int main(int argc, char** argv)
 		for (i = 0, pnote = partition->notes; i < partition->note_count; i++, pnote++)
 		{
 			float note_time = track_beat - pnote->time;
-			if ((note_time >= 0.0f) && (note_time < 1.0f))
-				launchpad_set_color(pnote->x, pnote->y, 3, 3);
+			if ((note_time >= -1.0f) && (note_time < 0.0f))
+			{
+				if (note_time >= -0.5f)
+					launchpad_set_color(pnote->x, pnote->y, 2, 2);
+				else
+					launchpad_set_color(pnote->x, pnote->y, 1, 1);
+			}
+			else if ((note_time >= 0.0f) && (note_time < 1.0f))
+			{
+				launchpad_set_color(pnote->x, pnote->y, 1, 3);
+			}
 			else if ((note_time >= 1.0f) && (note_time < 2.0f))
+			{
 				launchpad_set_color(pnote->x, pnote->y, 0, 0);
+			}
 		}
 		
 		memset(pcm_out, 0, sizeof(pcm_out));
