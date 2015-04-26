@@ -209,8 +209,6 @@ static void score_enter()
 	
 	menu_track = load_sfx("data/wav/harmonica.wav");
 	menu_channel = mixer_play(menu_track, 0, 1, 1);
-	
-	final_score = 0.9f;
 }
 
 static void score_leave()
