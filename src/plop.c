@@ -78,13 +78,13 @@ static void menu_update()
 			{
 				menu_leave();
 				current_state = STATE_GAME;
-				game_enter("data/json/test_patterns.json");
+				game_enter("data/json/danse.json");
 			}
 			if ((x >= 4) && (x <= 5))
 			{
 				menu_leave();
 				current_state = STATE_GAME;
-				game_enter("data/json/test_patterns.json");
+				game_enter("data/json/folk.json");
 			}
 		}
 	}
