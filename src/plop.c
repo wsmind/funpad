@@ -11,6 +11,8 @@
 #define PRE_TIME 1.0f
 #define POST_TIME 1.0f
 
+#define MAX_PLAYERS 4
+
 static float time = 0.0f;
 
 typedef enum
@@ -95,10 +97,10 @@ static void menu_update()
 }
 
 static partition_t *partition;
-static float note_scores[MAX_NOTES];
+static float note_scores[MAX_PLAYERS][MAX_NOTES];
 static sfx_t main_track;
 static int main_channel;
-static float final_score;
+static float final_scores[MAX_PLAYERS];
 
 static void game_enter(const char *filename)
 {
@@ -115,12 +117,15 @@ static void game_enter(const char *filename)
 
 static void game_leave()
 {
-	int i;
-	final_score = 0.0f;
-	for (i = 0; i < partition->note_count; i++)
-		final_score += note_scores[i];
-	final_score /= (float)partition->note_count;
-	printf("final score: %f\n", final_score);
+	int i, j;
+	for (j = 0; j < MAX_PLAYERS; j++)
+	{
+		final_scores[j] = 0.0f;
+		for (i = 0; i < partition->note_count; i++)
+			final_scores[j] += note_scores[j][i];
+		final_scores[j] /= (float)partition->note_count;
+		printf("final score (player %d): %f\n", j, final_scores[j]);
+	}
 	
 	unload_partition(partition);
 	unload_sfx(main_track);
@@ -128,7 +133,7 @@ static void game_leave()
 
 static void game_update()
 {
-	int i;
+	int i, j;
 	
 	int down = 0, x = -1, y = -1;
 	if (launchpad_get_input(&down, &x, &y))
@@ -153,41 +158,70 @@ static void game_update()
 	{
 		float note_time = track_beat - note->time;
 		
-		if ((note->x == x) && (note->y == y) && (note_scores[i] == 0.0f))
+		for (j = 0; j < MAX_PLAYERS; j++)
 		{
-			if ((note_time > -0.5f) && (note_time < 0.5f))
+			int pnx, pny;
+			
+			if (j == 0)
 			{
-				note_scores[i] = 1.0f - fabs(note_time) * 2.0f;
-				printf("note %d scored %f\n", i, note_scores[i]);
+				pnx = 3 - note->y;
+				pny = note->x;
 			}
-		}
+			else if (j == 1)
+			{
+				pnx = 3 - note->x;
+				pny = 3 - note->y;
+			}
+			else if (j == 2)
+			{
+				pnx = note->x;
+				pny = note->y;
+			}
+			else if (j == 3)
+			{
+				pnx = note->y;
+				pny = 3 - note->x;
+			}
+			
+			pnx += (j % 2) * 4;
+			pny += (j / 2) * 4;
+			
+			if ((pnx == x) && (pny == y) && (note_scores[j][i] == 0.0f))
+			{
+				if ((note_time > -0.5f) && (note_time < 0.5f))
+				{
+					note_scores[j][i] = 1.0f - fabs(note_time) * 2.0f;
+					printf("note %d (player %d) scored %f\n", i, j, note_scores[j][i]);
+				}
+			}
 		
-		if ((note_time >= -PRE_TIME) && (note_time < 0.0f))
-		{
-			if (note_time < -PRE_TIME * 0.6f)
-				launchpad_set_color(note->x, note->y, 1, 1);
-			else if (note_time < -PRE_TIME * 0.3f)
-				launchpad_set_color(note->x, note->y, 2, 2);
-			else
-				launchpad_set_color(note->x, note->y, 3, 3);
-		}
-		else if ((note_time >= 0.0f) && (note_time < POST_TIME))
-		{
-			if (note_scores[i] > 0.0f)
+			if ((note_time >= -PRE_TIME) && (note_time < 0.0f))
 			{
-				launchpad_set_color(note->x, note->y, 0, 3);
-			}
-			else
-			{
-				if (note_time < POST_TIME * 0.5f)
-					launchpad_set_color(note->x, note->y, 1, 3);
+				if (note_time < -PRE_TIME * 0.6f)
+					launchpad_set_color(pnx, pny, 1, 1);
+				else if (note_time < -PRE_TIME * 0.3f)
+					launchpad_set_color(pnx, pny, 2, 2);
 				else
-					launchpad_set_color(note->x, note->y, 1, 0);
+					launchpad_set_color(pnx, pny, 3, 3);
 			}
-		}
-		else if ((note_time >= POST_TIME) && (note_time < POST_TIME + 0.2f))
-		{
-			launchpad_set_color(note->x, note->y, 0, 0);
+			else if ((note_time >= 0.0f) && (note_time < POST_TIME))
+			{
+				if (note_scores[j][i] > 0.0f)
+				{
+					launchpad_set_color(pnx, pny, 0, 3);
+				}
+				else
+				{
+					if (note_time < POST_TIME * 0.5f)
+						launchpad_set_color(pnx, pny, 1, 3);
+					else
+						launchpad_set_color(pnx, pny, 1, 0);
+				}
+			}
+			else if ((note_time >= POST_TIME) && (note_time < POST_TIME + 0.2f))
+			{
+				launchpad_set_color(pnx, pny, 0, 0);
+			}
 		}
 	}
 	
@@ -230,12 +264,22 @@ static void score_update()
 		launchpad_set_color(0, 7 - i, color, color);
 	}
 	
-	int limit = (int)(final_score * 6.0f);
+	/*int limit = (int)(final_scores[0] * 6.0f);
 	for (i = 0; i < 6; i++)
 	{
 		int in = (i <= limit) * 3;
 		launchpad_set_color(i + 1, 3, 3 - in, in);
 		launchpad_set_color(i + 1, 4, 3 - in, in);
+	}*/
+	
+	for (i = 0; i < MAX_PLAYERS; i++)
+	{
+		int offX = (i % 2) * 4;
+		int offY = (i / 2) * 4;
+		launchpad_set_color(1 + offX, 1 + offY, (final_scores[i] < 0.25f) * 3, (final_scores[i] >= 0.25f) * 3);
+		launchpad_set_color(1 + offX, 2 + offY, (final_scores[i] < 0.5f) * 3, (final_scores[i] >= 0.5f) * 3);
+		launchpad_set_color(2 + offX, 1 + offY, (final_scores[i] < 0.75f) * 3, (final_scores[i] >= 0.75f) * 3);
+		launchpad_set_color(2 + offX, 2 + offY, (final_scores[i] < 0.9f) * 3, (final_scores[i] >= 0.9f) * 3);
 	}
 	
 	if (launchpad_get_input(0, 0, 0))
