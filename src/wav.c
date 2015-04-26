@@ -59,3 +59,8 @@ sfx_t load_sfx(const char *filename)
 	return sfx;
 }
 
+void unload_sfx(sfx_t sfx)
+{
+	free(sfx.buffer);
+}
+

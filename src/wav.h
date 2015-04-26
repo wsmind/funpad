@@ -31,6 +31,7 @@ typedef struct
 } sfx_t;
 
 sfx_t load_sfx(const char *filename);
+void unload_sfx(sfx_t sfx);
 
 #endif // WAV_H
 
