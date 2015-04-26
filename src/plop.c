@@ -14,6 +14,9 @@
 #define DELAY_LEFT_DURATION (BAR_DURATION / 2)
 #define DELAY_RIGHT_DURATION (BAR_DURATION  * 2 / 3)
 
+#define PRE_TIME 2.0f
+#define POST_TIME 1.0f
+
 unsigned int min(unsigned int a, unsigned int b)
 {
 	return (a <= b) ? a : b;
@@ -29,24 +32,28 @@ typedef struct
 
 channel_t channels[POLYPHONY];
 
+float *note_scores;
+
 int main(int argc, char** argv)
 {
 	memset(&channels, 0, sizeof(channels));
 	
-	sfx_t sfx[] = {
+	/*sfx_t sfx[] = {
 		load_sfx("data/wav/Hhrruuuuu!!!.wav"),
 		load_sfx("data/wav/Kick.wav"),
 		load_sfx("data/wav/Bounce.wav"),
 		load_sfx("data/wav/OJ_Damn.wav"),
 		load_sfx("data/wav/Gucci_Mane_Yeah_(1).wav"),
 		load_sfx("data/wav/Gucci_Mane_Yeah_(2).wav")
-	};
+	};*/
 	
 	sfx_t main_track = load_sfx(argv[1]);
 	channels[0].play_position = main_track.buffer + 44100*2*2*24;
 	channels[0].remaining_frames = main_track.frame_count;
 	
 	partition_t *partition = load_partition(argv[2]);
+	note_scores = malloc(sizeof(float) * partition->note_count);
+	memset(note_scores, 0, sizeof(float) * partition->note_count);
 	
 	launchpad_open();
 	launchpad_reset();
@@ -117,11 +124,11 @@ int main(int argc, char** argv)
 	
 	while (1)
 	{
+		int x = -1, y = -1;
 		char note[3];
 		int status = launchpad_read(note);
 		if (status > 0)
 		{
-			int x, y;
 			x = min(launchpad_get_x(note), 7);
 			y = min(launchpad_get_y(note), 7);
 			
@@ -167,18 +174,40 @@ int main(int argc, char** argv)
 		for (i = 0, pnote = partition->notes; i < partition->note_count; i++, pnote++)
 		{
 			float note_time = fmod(track_beat, 16.0f) - pnote->time;
-			if ((note_time >= -1.0f) && (note_time < 0.0f))
+			
+			if ((pnote->x == x) && (pnote->y == y) && (note_scores[i] == 0.0f))
 			{
-				if (note_time >= -0.5f)
+				if ((note_time > -0.5f) && (note_time < 0.5f))
+				{
+					note_scores[i] = 1.0f - fabs(note_time) * 2.0f;
+					printf("note %d scored %f\n", i, note_scores[i]);
+				}
+			}
+			
+			if ((note_time >= -PRE_TIME) && (note_time < 0.0f))
+			{
+				if (note_time < -PRE_TIME * 0.6f)
+					launchpad_set_color(pnote->x, pnote->y, 1, 1);
+				else if (note_time < -PRE_TIME * 0.3f)
 					launchpad_set_color(pnote->x, pnote->y, 2, 2);
 				else
-					launchpad_set_color(pnote->x, pnote->y, 1, 1);
+					launchpad_set_color(pnote->x, pnote->y, 3, 3);
 			}
-			else if ((note_time >= 0.0f) && (note_time < 1.0f))
+			else if ((note_time >= 0.0f) && (note_time < POST_TIME))
 			{
-				launchpad_set_color(pnote->x, pnote->y, 1, 3);
+				if (note_scores[i] > 0.0f)
+				{
+					launchpad_set_color(pnote->x, pnote->y, 0, 3);
+				}
+				else
+				{
+					if (note_time < POST_TIME * 0.5f)
+						launchpad_set_color(pnote->x, pnote->y, 1, 3);
+					else
+						launchpad_set_color(pnote->x, pnote->y, 1, 0);
+				}
 			}
-			else if ((note_time >= 1.0f) && (note_time < 2.0f))
+			else if ((note_time >= POST_TIME) && (note_time < POST_TIME + 0.2f))
 			{
 				launchpad_set_color(pnote->x, pnote->y, 0, 0);
 			}
