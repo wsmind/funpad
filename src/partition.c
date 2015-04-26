@@ -29,7 +29,8 @@ partition_t *load_partition(const char *filename)
 	
 	assert(cJSON_GetObjectItem(root, "track"));
 	assert(cJSON_GetObjectItem(root, "bpm"));
-	assert(cJSON_GetObjectItem(root, "notes"));
+	assert(cJSON_GetObjectItem(root, "patterns"));
+	assert(cJSON_GetObjectItem(root, "sheet"));
 	
 	partition->track = strdup(cJSON_GetObjectItem(root, "track")->valuestring);
 	partition->bpm = (float)cJSON_GetObjectItem(root, "bpm")->valuedouble;
@@ -39,25 +40,46 @@ partition_t *load_partition(const char *filename)
 	else
 		partition->skip_bars = 0;
 	
-	cJSON *notesJson = cJSON_GetObjectItem(root, "notes");
-	partition->note_count = cJSON_GetArraySize(notesJson);
-	printf("%d notes!\n", partition->note_count);
+	cJSON *patternsJson = cJSON_GetObjectItem(root, "patterns");
+	cJSON *sheetJson = cJSON_GetObjectItem(root, "sheet");
 	
-	partition->notes = malloc(sizeof(note_t) * partition->note_count);
-	cJSON *noteJson = notesJson->child;
-	int i;
-	for (i = 0; i < partition->note_count; i++)
+	partition->note_count = 0;
+	partition->length = 0;
+	cJSON *currentPattern = sheetJson->child;
+	while (currentPattern)
 	{
-		partition->notes[i].time = (float)cJSON_GetArrayItem(noteJson, 0)->valuedouble;
-		partition->notes[i].x = (float)cJSON_GetArrayItem(noteJson, 1)->valueint;
-		partition->notes[i].y = (float)cJSON_GetArrayItem(noteJson, 2)->valueint;
-		noteJson = noteJson->next;
+		char *patternName = currentPattern->valuestring;
+		cJSON *patternJson = cJSON_GetObjectItem(patternsJson, patternName);
+		assert(cJSON_GetObjectItem(patternJson, "length"));
+		assert(cJSON_GetObjectItem(patternJson, "notes"));
+		
+		int pattern_length = cJSON_GetObjectItem(patternJson, "length")->valueint;
+		cJSON *noteJson = cJSON_GetObjectItem(patternJson, "notes")->child;
+		while (noteJson)
+		{
+			partition->notes[partition->note_count].time = (float)cJSON_GetArrayItem(noteJson, 0)->valuedouble + (float)partition->length;
+			partition->notes[partition->note_count].x = (float)cJSON_GetArrayItem(noteJson, 1)->valueint;
+			partition->notes[partition->note_count].y = (float)cJSON_GetArrayItem(noteJson, 2)->valueint;
+			//printf("note %f (%d, %d)\n", partition->notes[partition->note_count].time, partition->notes[partition->note_count].x, partition->notes[partition->note_count].y);
+			partition->note_count++;
+			noteJson = noteJson->next;
+		}
+		
+		partition->length += pattern_length;
+		currentPattern = currentPattern->next;
 	}
 	
 	cJSON_Delete(root);
 	
 	free(contents);
 	
+	printf("%d notes! (%d beats)\n", partition->note_count, partition->length);
+	
 	return partition;
+}
+
+void unload_partition(partition_t *partition)
+{
+	free(partition);
 }
 

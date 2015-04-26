@@ -174,7 +174,7 @@ int main(int argc, char** argv)
 		note_t *pnote;
 		for (i = 0, pnote = partition->notes; i < partition->note_count; i++, pnote++)
 		{
-			float note_time = fmod(track_beat, 16.0f) - pnote->time;
+			float note_time = track_beat - pnote->time;
 			
 			if ((pnote->x == x) && (pnote->y == y) && (note_scores[i] == 0.0f))
 			{

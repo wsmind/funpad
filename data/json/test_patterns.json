@@ -1,0 +1,31 @@
+{
+	"track": "data/wav/guitare_folk.wav",
+	"bpm": 120,
+	"patterns": {
+		"easy_stuff": {
+			"length": 8,
+			"notes": [
+				[0, 0, 3],
+				[2, 1, 3],
+				[4, 2, 3],
+				[6, 3, 3]
+			]
+		},
+		"hard_stuff": {
+			"length": 4,
+			"notes": [
+				[0, 0, 0],
+				[1, 1, 1],
+				[2, 2, 2],
+				[3, 3, 3]
+			]
+		}
+	},
+	"sheet": [
+		"easy_stuff",
+		"easy_stuff",
+		"hard_stuff",
+		"easy_stuff"
+	]
+}
+
