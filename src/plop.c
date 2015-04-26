@@ -53,8 +53,8 @@ int main(int argc, char** argv)
 	
 	while (1)
 	{
-		int x = -1, y = -1;
-		char note[3];
+		int down = 0, x = -1, y = -1;
+		/*char note[3];
 		int status = launchpad_read(note);
 		if (status > 0)
 		{
@@ -73,6 +73,20 @@ int main(int argc, char** argv)
 			//launchpad_write(note);
 			
 			printf("received: %02x\n", note[1]);
+		}*/
+		
+		if (launchpad_get_input(&down, &x, &y))
+		{
+			if (down)
+			{
+				launchpad_set_color(x, y, 0, 3);
+			}
+			else
+			{
+				launchpad_set_color(x, y, 0, 0);
+			}
+			
+			printf("received: %d %d\n", x, y);
 		}
 		
 		unsigned int track_time = main_track.frame_count - mixer_get_remaining_frames(main_channel) - BUFFER_SIZE * 4;

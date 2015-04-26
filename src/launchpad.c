@@ -3,6 +3,11 @@
 
 #include "launchpad.h"
 
+static unsigned int min(unsigned int a, unsigned int b)
+{
+	return (a <= b) ? a : b;
+}
+
 static snd_rawmidi_t *in = 0;
 static snd_rawmidi_t *out = 0;
 
@@ -54,6 +59,24 @@ void launchpad_set_color(unsigned int x, unsigned int y, unsigned int red, unsig
 	note[1] = (y << 4) | x;
 	note[2] = (green << 4) | 0x0c | red;
 	launchpad_write(note);
+}
+
+int launchpad_get_input(int *down, int *x, int *y)
+{
+	char note[3];
+	if (launchpad_read(note) <= 0)
+		return 0;
+	
+	if (down) *down = launchpad_is_down(note);
+	if (x) *x = min(launchpad_get_x(note), 7);
+	if (y) *y = min(launchpad_get_y(note), 7);
+	
+	return 1;
+}
+
+unsigned int launchpad_is_down(char note[3])
+{
+	return (note[2] != 0);
 }
 
 unsigned int launchpad_get_x(char note[3])
