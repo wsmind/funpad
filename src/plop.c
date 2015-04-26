@@ -40,23 +40,47 @@ static void menu_leave()
 
 static void menu_update()
 {
-	int x, y;
-	for (y = 0; y < 8; y++)
+	int i;
+	for (i = 0; i < 8; i++)
 	{
-		for (x = 0; x < 8; x++)
-		{
-			launchpad_set_color(x, y, (x + (int)time) % 4, y % 4);
-		}
+		float fcolor = fmod((float)i / 8.0f + time * 2.0f, 1.0f);
+		int color = (int)(fcolor * 2.0f + 1.0f);
+		launchpad_set_color(i, 0, color, 0);
+		launchpad_set_color(7, i, color, color);
+		launchpad_set_color(7 - i, 7, 0, color);
+		launchpad_set_color(0, 7 - i, color, color);
 	}
 	
-	if (launchpad_get_input(0, 0, 0))
+	launchpad_set_color(2, 3, 0, 3);
+	launchpad_set_color(3, 3, 0, 3);
+	launchpad_set_color(2, 4, 0, 3);
+	launchpad_set_color(3, 4, 0, 3);
+	
+	launchpad_set_color(4, 3, 3, 3);
+	launchpad_set_color(5, 3, 3, 3);
+	launchpad_set_color(4, 4, 3, 3);
+	launchpad_set_color(5, 4, 3, 3);
+	
+	int x, y;
+	if (launchpad_get_input(0, &x, &y))
 	{
-		menu_leave();
-		current_state = STATE_GAME;
-		game_enter("data/json/test_patterns.json");
+		if ((y >= 3) && (y <= 4))
+		{
+			if ((x >= 2) && (x <= 3))
+			{
+				menu_leave();
+				current_state = STATE_GAME;
+				game_enter("data/json/test_patterns.json");
+			}
+			if ((x >= 4) && (x <= 5))
+			{
+				menu_leave();
+				current_state = STATE_GAME;
+				game_enter("data/json/test_patterns.json");
+			}
+		}
 	}
 }
-
 
 static partition_t *partition;
 static float note_scores[MAX_NOTES];
