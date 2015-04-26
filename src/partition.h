@@ -10,6 +10,9 @@ typedef struct
 
 typedef struct
 {
+	char *track;
+	float bpm;
+	int skip_bars;
 	unsigned int note_count;
 	note_t *notes;
 } partition_t;

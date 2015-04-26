@@ -27,9 +27,19 @@ partition_t *load_partition(const char *filename)
 	
 	partition_t *partition = malloc(sizeof(partition_t));
 	
-	cJSON *notesJson = cJSON_GetObjectItem(root, "notes");
-	assert(notesJson);
+	assert(cJSON_GetObjectItem(root, "track"));
+	assert(cJSON_GetObjectItem(root, "bpm"));
+	assert(cJSON_GetObjectItem(root, "notes"));
 	
+	partition->track = strdup(cJSON_GetObjectItem(root, "track")->valuestring);
+	partition->bpm = (float)cJSON_GetObjectItem(root, "bpm")->valuedouble;
+	
+	if (cJSON_GetObjectItem(root, "skip_bars"))
+		partition->skip_bars = cJSON_GetObjectItem(root, "skip_bars")->valueint;
+	else
+		partition->skip_bars = 0;
+	
+	cJSON *notesJson = cJSON_GetObjectItem(root, "notes");
 	partition->note_count = cJSON_GetArraySize(notesJson);
 	printf("%d notes!\n", partition->note_count);
 	

@@ -9,8 +9,7 @@
 #define BUFFER_SIZE 256
 #define POLYPHONY 16
 
-#define BPM 120.0f
-#define BAR_DURATION ((unsigned int)(60.0f * 44100.0f / BPM))
+#define BAR_DURATION ((unsigned int)(60.0f * 44100.0f / 120.0f))
 #define DELAY_LEFT_DURATION (BAR_DURATION / 2)
 #define DELAY_RIGHT_DURATION (BAR_DURATION  * 2 / 3)
 
@@ -47,11 +46,13 @@ int main(int argc, char** argv)
 		load_sfx("data/wav/Gucci_Mane_Yeah_(2).wav")
 	};*/
 	
-	sfx_t main_track = load_sfx(argv[1]);
-	channels[0].play_position = main_track.buffer + 44100*2*2*24;
-	channels[0].remaining_frames = main_track.frame_count;
+	partition_t *partition = load_partition(argv[1]);
 	
-	partition_t *partition = load_partition(argv[2]);
+	sfx_t main_track = load_sfx(partition->track);
+	int skip_frames = 44100 * 2 * partition->skip_bars;
+	channels[0].play_position = main_track.buffer + skip_frames * 2;
+	channels[0].remaining_frames = main_track.frame_count - skip_frames;
+	
 	note_scores = malloc(sizeof(float) * partition->note_count);
 	memset(note_scores, 0, sizeof(float) * partition->note_count);
 	
@@ -161,7 +162,7 @@ int main(int argc, char** argv)
 		}
 		
 		unsigned int track_time = main_track.frame_count - channels[0].remaining_frames - BUFFER_SIZE * 4;
-		float track_beat = (float)track_time * BPM / 60.0f / 44100.0f;
+		float track_beat = (float)track_time * partition->bpm / 60.0f / 44100.0f;
 		
 /*		note[0] = 0x90;
 		note[1] = 0x00; // row 0, column 0
