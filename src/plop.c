@@ -16,7 +16,8 @@ static float time = 0.0f;
 typedef enum
 {
 	STATE_MENU,
-	STATE_GAME
+	STATE_GAME,
+	STATE_SCORE
 } gamestate_t;
 
 static gamestate_t current_state;
@@ -27,6 +28,9 @@ static void menu_update();
 static void game_enter(const char *filename);
 static void game_leave();
 static void game_update();
+static void score_enter();
+static void score_leave();
+static void score_update();
 
 
 static sfx_t menu_track;
@@ -69,8 +73,8 @@ static void menu_update()
 	launchpad_set_color(4, 4, 3, 3);
 	launchpad_set_color(5, 4, 3, 3);
 	
-	int x, y;
-	if (launchpad_get_input(0, &x, &y))
+	int down, x, y;
+	if (launchpad_get_input(&down, &x, &y) && down)
 	{
 		if ((y >= 3) && (y <= 4))
 		{
@@ -182,6 +186,55 @@ static void game_update()
 	if (mixer_get_remaining_frames(main_channel) == 0)
 	{
 		game_leave();
+		current_state = STATE_SCORE;
+		score_enter();
+	}
+}
+
+static float score_start_time;
+
+static void score_enter()
+{
+	launchpad_reset();
+	
+	score_start_time = time;
+	
+	menu_track = load_sfx("data/wav/harmonica.wav");
+	menu_channel = mixer_play(menu_track, 0, 1, 1);
+}
+
+static void score_leave()
+{
+	mixer_stop(menu_channel);
+	unload_sfx(menu_track);
+}
+
+static void score_update()
+{
+	int i;
+	for (i = 0; i < 8; i++)
+	{
+		float fcolor = fmod((float)i / 8.0f + time * 2.0f, 1.0f);
+		int color = (int)(fcolor * 2.0f + 1.0f);
+		launchpad_set_color(i, 0, color, 0);
+		launchpad_set_color(7, i, color, color);
+		launchpad_set_color(7 - i, 7, 0, color);
+		launchpad_set_color(0, 7 - i, color, color);
+	}
+	
+	/*launchpad_set_color(2, 3, 0, 3);
+	launchpad_set_color(3, 3, 0, 3);
+	launchpad_set_color(2, 4, 0, 3);
+	launchpad_set_color(3, 4, 0, 3);
+	
+	launchpad_set_color(4, 3, 3, 3);
+	launchpad_set_color(5, 3, 3, 3);
+	launchpad_set_color(4, 4, 3, 3);
+	launchpad_set_color(5, 4, 3, 3);*/
+	
+	if (launchpad_get_input(0, 0, 0))
+	{
+		score_leave();
 		current_state = STATE_MENU;
 		menu_enter();
 	}
@@ -214,6 +267,7 @@ int main(int argc, char** argv)
 		{
 			case STATE_MENU: menu_update(); break;
 			case STATE_GAME: game_update(); break;
+			case STATE_SCORE: score_update(); break;
 		}
 		
 		mixer_render();
