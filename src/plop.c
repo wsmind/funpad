@@ -8,7 +8,7 @@
 #include "partition.h"
 #include "wav.h"
 
-#define PRE_TIME 2.0f
+#define PRE_TIME 1.0f
 #define POST_TIME 1.0f
 
 static float time = 0.0f;
@@ -177,6 +177,13 @@ static void game_update()
 		{
 			launchpad_set_color(note->x, note->y, 0, 0);
 		}
+	}
+	
+	if (mixer_get_remaining_frames(main_channel) == 0)
+	{
+		game_leave();
+		current_state = STATE_MENU;
+		menu_enter();
 	}
 }
 

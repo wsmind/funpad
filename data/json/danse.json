@@ -135,6 +135,15 @@
 				[14, 1, 2],
 				[14, 2, 2]
 			]
+		},
+		"end": {
+			"length": 4,
+			"notes": [
+				[0, 0, 0],
+				[0, 3, 0],
+				[0, 0, 3],
+				[0, 3, 3]
+			]
 		}
 	},
 	"sheet": [
@@ -160,7 +169,24 @@
 		"intro_2",
 		
 		"hmm_namillah",
-		"hmm_namillah_2"
+		"hmm_namillah_2",
+		
+		"intro_2",
+		"intro_2",
+		"intro_2",
+		"intro_2",
+		
+		"square",
+		"intro_1",
+		"intro_2",
+		"square",
+		"intro_1",
+		"intro_2",
+		
+		"hmm_namillah",
+		"square",
+		
+		"end"
 	]
 }
 
