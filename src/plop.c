@@ -98,6 +98,7 @@ static partition_t *partition;
 static float note_scores[MAX_NOTES];
 static sfx_t main_track;
 static int main_channel;
+static float final_score;
 
 static void game_enter(const char *filename)
 {
@@ -114,6 +115,13 @@ static void game_enter(const char *filename)
 
 static void game_leave()
 {
+	int i;
+	final_score = 0.0f;
+	for (i = 0; i < partition->note_count; i++)
+		final_score += note_scores[i];
+	final_score /= (float)partition->note_count;
+	printf("final score: %f\n", final_score);
+	
 	unload_partition(partition);
 	unload_sfx(main_track);
 }
@@ -201,6 +209,8 @@ static void score_enter()
 	
 	menu_track = load_sfx("data/wav/harmonica.wav");
 	menu_channel = mixer_play(menu_track, 0, 1, 1);
+	
+	final_score = 0.9f;
 }
 
 static void score_leave()
@@ -216,21 +226,19 @@ static void score_update()
 	{
 		float fcolor = fmod((float)i / 8.0f + time * 2.0f, 1.0f);
 		int color = (int)(fcolor * 2.0f + 1.0f);
-		launchpad_set_color(i, 0, color, 0);
+		launchpad_set_color(i, 0, color, color);
 		launchpad_set_color(7, i, color, color);
-		launchpad_set_color(7 - i, 7, 0, color);
+		launchpad_set_color(7 - i, 7, color, color);
 		launchpad_set_color(0, 7 - i, color, color);
 	}
 	
-	/*launchpad_set_color(2, 3, 0, 3);
-	launchpad_set_color(3, 3, 0, 3);
-	launchpad_set_color(2, 4, 0, 3);
-	launchpad_set_color(3, 4, 0, 3);
-	
-	launchpad_set_color(4, 3, 3, 3);
-	launchpad_set_color(5, 3, 3, 3);
-	launchpad_set_color(4, 4, 3, 3);
-	launchpad_set_color(5, 4, 3, 3);*/
+	int limit = (int)(final_score * 6.0f);
+	for (i = 0; i < 6; i++)
+	{
+		int in = (i <= limit) * 3;
+		launchpad_set_color(i + 1, 3, 3 - in, in);
+		launchpad_set_color(i + 1, 4, 3 - in, in);
+	}
 	
 	if (launchpad_get_input(0, 0, 0))
 	{
