@@ -29,13 +29,21 @@ static void game_leave();
 static void game_update();
 
 
+static sfx_t menu_track;
+static unsigned int menu_channel;
+
 static void menu_enter()
 {
 	launchpad_reset();
+	
+	menu_track = load_sfx("data/wav/harmonica.wav");
+	menu_channel = mixer_play(menu_track, 0, 1, 1);
 }
 
 static void menu_leave()
 {
+	mixer_stop(menu_channel);
+	unload_sfx(menu_track);
 }
 
 static void menu_update()
@@ -93,7 +101,7 @@ static void game_enter(const char *filename)
 	
 	main_track = load_sfx(partition->track);
 	int skip_frames = 44100 * 2 * partition->skip_bars;
-	main_channel = mixer_play(main_track, skip_frames, 0);
+	main_channel = mixer_play(main_track, skip_frames, 0, 0);
 	
 	memset(note_scores, 0, sizeof(note_scores));
 	

@@ -12,6 +12,7 @@
 typedef struct
 {
 	short *play_position;
+	short *loop_position;
 	unsigned int remaining_frames;
 	int aux_send;
 } channel_t;
@@ -77,7 +78,7 @@ void mixer_open()
 	memset(delay_right, 0, sizeof(delay_right));
 }
 
-unsigned int mixer_play(sfx_t sfx, unsigned int skip_frames, unsigned int aux_send)
+unsigned int mixer_play(sfx_t sfx, unsigned int skip_frames, unsigned int aux_send, unsigned int loop)
 {
 	int i;
 	for (i = 0; i < POLYPHONY; i++)
@@ -87,11 +88,18 @@ unsigned int mixer_play(sfx_t sfx, unsigned int skip_frames, unsigned int aux_se
 			channels[i].play_position = sfx.buffer;
 			channels[i].remaining_frames = sfx.frame_count;
 			channels[i].aux_send = aux_send;
+			channels[i].loop_position = loop ? sfx.buffer : 0;
+			
 			return i;
 		}
 	}
 	
 	assert(0); // no free channel
+}
+
+void mixer_stop(unsigned int channel)
+{
+	memset(&channels[channel], 0, sizeof(channel_t));
 }
 
 unsigned int mixer_get_remaining_frames(unsigned int channel)
@@ -122,6 +130,12 @@ void mixer_render()
 		
 		channels[i].play_position = channel_data;
 		channels[i].remaining_frames -= frames_to_mix;
+		
+		if ((channels[i].remaining_frames == 0) && channels[i].loop_position)
+		{
+			channels[i].play_position = channels[i].loop_position;
+			channels[i].remaining_frames = (channel_data - channels[i].play_position) / 2;
+		}
 	}
 	
 	for (i = 0; i < BUFFER_SIZE; i++)
