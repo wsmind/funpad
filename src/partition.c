@@ -50,6 +50,7 @@ partition_t *load_partition(const char *filename)
 	{
 		char *patternName = currentPattern->valuestring;
 		cJSON *patternJson = cJSON_GetObjectItem(patternsJson, patternName);
+		assert(patternJson);
 		assert(cJSON_GetObjectItem(patternJson, "length"));
 		assert(cJSON_GetObjectItem(patternJson, "notes"));
 		
