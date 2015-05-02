@@ -365,7 +365,7 @@
 				[4, 0, 1],
 				[5, 3, 1],
 				[6, 0, 0],
-				[7, 3, 0],			
+				[7, 3, 0]			
 			]		
 		},
 		"alternate_up_fast": {
@@ -379,7 +379,7 @@
 				[2, 0, 1],
 				[2.5, 3, 1],
 				[3, 0, 0],
-				[3.5, 3, 0],			
+				[3.5, 3, 0]			
 			]		
 		},
 		"flute_stuff_slow_up2": {
@@ -401,6 +401,7 @@
 				[1.5, 0, 2],
 				[2, 3, 2],
 				[2.5, 0, 3],
+				[3, 3, 3]
 			]		
 		},
 		"guitar_end_part1": {
@@ -412,8 +413,126 @@
 				[3, 0, 2],
 				[4, 0, 1],
 				[5, 0, 0],
-				[5, 3, 0],
+				[5, 3, 0]
 			]		
+		},
+		"simple_up1": {
+			"length": 4,
+			"notes": [
+				[0, 0, 3],
+				[1, 0, 2],
+				[2, 0, 1],
+				[3, 0, 0]			
+			]		
+		},
+		"simple_up2": {
+			"length": 4,
+			"notes": [
+				[0, 0, 3],
+				[0, 3, 3],
+				[1, 0, 2],
+				[2, 0, 1],
+				[3, 0, 0]			
+			]		
+		},
+		"simple_up3": {
+			"length": 4,
+			"notes": [
+				[0, 1, 3],
+				[1, 1, 2],
+				[2, 1, 1],
+				[3, 1, 0]			
+			]		
+		},
+		"voice_pattern1": {
+			"length": 8,
+			"notes": [
+				[0, 0, 3],
+				[2, 0, 2],
+				[3, 3, 0],
+				[4, 3, 1],
+				[6, 3, 3]			
+			]
+		},
+		"voice_pattern2": {
+			"length": 8,
+			"notes": [
+				[0, 0, 3],
+				[2, 0, 2],
+				[3, 3, 0],
+				[3.25, 3, 1],
+				[4, 3, 2],
+				[5.5, 3, 3]			
+			]		
+		},
+		"guitar_fast_stuff1": {
+			"length": 4,
+			"notes": [
+				[0, 0, 3],
+				[0.5, 3, 3],
+				[1, 0, 2],
+				[2, 3, 2],
+				[3, 0, 1],
+				[3.5, 3, 1]			
+			]		
+		},
+		"guitar_fast_stuff2": {
+			"length": 4,
+			"notes": [
+				[0, 0, 3],
+				[0.5, 3, 3],
+				[1, 0, 2],
+				[2, 3, 2],
+				[3, 0, 1],
+				[3, 3, 1],
+				[3.5, 0, 0],
+				[3.5, 0, 3]			
+			]		
+		},
+		"guitar_fast_stuff3": {
+			"length": 4,
+			"notes": [
+				[0, 0, 3],
+				[1, 0, 2],
+				[1, 3, 2],				
+				[1.5, 0, 1],
+				[1.5, 3, 1],				
+				[2.5, 0, 0],
+				[3, 3, 0]
+			]	
+		},
+		"guitar_fast_stuff4": {
+			"length": 4,
+			"notes": [
+				[0, 0, 3],
+				[1.5, 3, 3],
+				[2.5, 0, 2],
+				[3, 3, 2]			
+			]
+		},
+		"guitar_fast_stuff5": {
+			"length": 4,
+			"notes": [
+				[0, 0, 3],
+				[1, 0, 2],
+				[1, 3, 2],				
+				[1.5, 0, 1],
+				[1.5, 3, 1],				
+				[2.5, 0, 0],
+				[3, 3, 0],
+				[3.5, 0, 1] 
+			]	
+		},
+		"guitar_final": {
+			"length": 4,
+			"notes": [
+				[0, 0, 3],
+				[0, 3, 3],
+				[0.75, 0, 2],
+				[0.75, 3, 2],
+				[1.5, 0, 1],				
+				[1.5, 3, 1]
+			]	
 		}
 	},
 	"sheet": [
@@ -459,60 +578,66 @@
 
 		"guitar_end_part1",
 		
+		"silence_bar2",
 
-		"left_stuff_slow",
-		"up_stuff_slow",
-		"left_stuff_fast",
-		"up_stuff_fast",
-		
-		"diagonal2_stuff1_slow",
-		"diagonal2_stuff2_slow",
-		"diagonal2_stuff1_fast",
-		"diagonal2_stuff2_fast",
-		"silence_bar",
-		"silence_bar",
-		"silence_bar",
-		
-		"alternate_stuff1_slow",
-		"alternate_stuff2_slow",
-		"alternate_stuff3_slow",
-		"easy_stuff1",
-		"easy_stuff2",
-		"easy_stuff1",
-		"alternate_stuff1_slow",
-		"alternate_stuff2_slow",
-		"easy_stuff2",
-		"easy_stuff2",
-		"alternate_stuff3_slow",
+		"simple_up1",
+		"simple_up2",
+		"simple_up3",
+		"simple_up2",
+		"simple_up1",
+
+		"voice_pattern1",
+		"voice_pattern2",
+
+		"simple_up1",
+		"simple_up2",
+		"simple_up2",
+		"simple_up3",
+
 		"square_stuff1_slow",
-		"square_stuff2_slow",
+		"square_stuff1_slow",
+		"square_stuff1_slow",
+		
+		"silence_bar",
+		
+		"guitar_fast_stuff1",		
+		"guitar_fast_stuff1",		
+		"guitar_fast_stuff1",
+		
+		"guitar_fast_stuff2",
+
+		"guitar_fast_stuff1",		
+		"guitar_fast_stuff1",		
+		"guitar_fast_stuff1",
+		
+		"guitar_fast_stuff2",
+
+		"guitar_fast_stuff3",
+
+		"guitar_fast_stuff1",
+		"guitar_fast_stuff1",
+		"guitar_fast_stuff2",
+
+		"guitar_fast_stuff4",
+		"guitar_fast_stuff4",
+		"guitar_fast_stuff4",
+		"guitar_fast_stuff1",
+
+		"guitar_fast_stuff5",
+
+		"guitar_fast_stuff1",
+		"guitar_fast_stuff1",
+		"guitar_fast_stuff1",
+		"guitar_fast_stuff2",
+
+		"guitar_fast_stuff1",
+		"guitar_fast_stuff1",
+		"guitar_fast_stuff3",
+
+		"guitar_final"
+
 
 		
-		"diagonal_stuff1_slow",
-		"diagonal_stuff2_slow",
-		"diagonal2_stuff1_slow",
-		"diagonal2_stuff2_slow",
-		"easy_stuff2",
-		"easy_stuff1",
-		"square_stuff1_fast",
-		"square_stuff2_fast",
-		"diagonal_stuff1_fast",
-		"diagonal_stuff2_fast",
-		"diagonal2_stuff1_fast",
-		"diagonal2_stuff2_fast",
-		"left_stuff_fast",
-		"up_stuff_fast",
-		"diagonal_stuff1_fast",
-		"diagonal_stuff2_fast",
-		"square_stuff1_fast",
-		"square_stuff2_fast",
-		"diagonal_stuff2_fast",
-		"diagonal2_stuff1_fast",
-		"diagonal2_stuff2_fast",
-		"left_stuff_fast",
-		"diagonal_stuff1_fast",
-		"up_stuff_fast",
-		"diagonal_stuff2_fast"
 	]
 }
 
