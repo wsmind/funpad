@@ -6,6 +6,10 @@
 			"length": 4,
 			"notes": []
 		},
+		"silence_bar2": {
+			"lenght": 6,
+			"notes": []
+		},
 		"tutorial_one_finger_corner": {
 			"length": 24,
 			"notes": [
@@ -578,7 +582,7 @@
 
 		"guitar_end_part1",
 		
-		"silence_bar",
+		"silence_bar2",
 
 		"simple_up1",
 		"simple_up2",
