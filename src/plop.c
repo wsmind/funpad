@@ -190,8 +190,9 @@ static void game_update()
 			{
 				if ((note_time > -0.5f) && (note_time < 0.5f))
 				{
-					note_scores[j][i] = 1.0f - fabs(note_time) * 2.0f;
-					printf("note %d (player %d) scored %f\n", i, j, note_scores[j][i]);
+					//note_scores[j][i] = 1.0f - fabs(note_time) * 2.0f;
+					//printf("note %d (player %d) scored %f\n", i, j, note_scores[j][i]);
+					note_scores[j][i] = 1.0f;
 				}
 			}
 		
